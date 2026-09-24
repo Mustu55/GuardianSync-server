@@ -1,0 +1,33 @@
+{
+  "name": "guardiansync-server",
+  "version": "1.0.0",
+  "description": "GuardianSync backend — SCADA command processing, real-time alerts, and forensic logging",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "nodemon src/server.js",
+    "seed": "node ../scripts/seed-mock-data.js",
+    "test": "jest --passWithNoTests"
+  },
+  "dependencies": {
+    "axios": "^1.6.2",
+    "bcryptjs": "^2.4.3",
+    "cors": "^2.8.5",
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2",
+    "express-rate-limit": "^7.1.4",
+    "fast-xml-parser": "^4.4.1",
+    "google-auth-library": "^10.9.0",
+    "helmet": "^7.1.0",
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^8.0.3",
+    "morgan": "^1.10.0",
+    "nodemailer": "^9.0.3",
+    "socket.io": "^4.7.2",
+    "zod": "^3.22.4"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0",
+    "nodemon": "^3.0.2"
+  }
+}

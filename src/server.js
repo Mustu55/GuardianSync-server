@@ -5,7 +5,7 @@ const helmet = require('helmet');
 const morgan = require('morgan');
 const rateLimit = require('express-rate-limit');
 
-const { PORT, corsOrigin, NODE_ENV, SCADA_AUTO_START, SCADA_DEFAULT_INDUSTRY } = require('./config/env');
+const { PORT, corsOrigin, CORS_ORIGINS, NODE_ENV, SCADA_AUTO_START, SCADA_DEFAULT_INDUSTRY } = require('./config/env');
 const connectDB = require('./config/db');
 const { isDatabaseConnected } = require('./config/db');
 const { initSocket } = require('./config/socket');
@@ -94,7 +94,7 @@ const boot = async () => {
   server.listen(PORT, () => {
     console.log(`\n🛡️  GuardianSync Server running on port ${PORT}`);
     console.log(`   Environment: ${NODE_ENV}`);
-    console.log(`   CORS origin: ${CORS_ORIGIN}\n`);
+    console.log(`   CORS origins: ${CORS_ORIGINS.join(', ')}\n`);
 
     // Start background services
     if (SCADA_AUTO_START) {

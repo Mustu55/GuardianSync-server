@@ -1,0 +1,38 @@
+services:
+  - type: web
+    name: guardiansync-server
+    runtime: node
+    plan: free
+    buildCommand: npm install
+    startCommand: npm start
+    healthCheckPath: /api/health
+    autoDeploy: true
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000
+      - key: MONGODB_URI
+        sync: false
+      - key: JWT_SECRET
+        sync: false
+      - key: JWT_EXPIRES_IN
+        value: 24h
+      - key: AI_ENGINE_URL
+        sync: false
+      - key: CORS_ORIGIN
+        sync: false
+      - key: SCADA_AUTO_START
+        value: "false"
+      - key: SCADA_SIM_INTERVAL
+        value: 3000
+      - key: SCADA_DEFAULT_INDUSTRY
+        value: power_plant
+      - key: GOOGLE_CLIENT_ID
+        sync: false
+      - key: GOOGLE_CLIENT_SECRET
+        sync: false
+      - key: SMTP_USER
+        sync: false
+      - key: SMTP_PASS
+        sync: false

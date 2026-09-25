@@ -8,12 +8,14 @@ let transporter;
 
 async function initTransporter() {
   if (!transporter) {
-    const smtpUser = process.env.SMTP_USER || '';
-    const smtpPass = process.env.SMTP_PASS || '';
+    const smtpUser = (process.env.SMTP_USER || '').trim();
+    const smtpPass = (process.env.SMTP_PASS || '').trim();
 
     if (smtpUser && smtpPass) {
       transporter = nodemailer.createTransport({
-        service: 'gmail',
+        host: process.env.SMTP_HOST || 'smtp.gmail.com',
+        port: Number(process.env.SMTP_PORT || 465),
+        secure: String(process.env.SMTP_SECURE || 'true').toLowerCase() === 'true',
         auth: {
           user: smtpUser,
           pass: smtpPass,
@@ -121,7 +123,11 @@ async function sendOtpEmail(toEmail, otpCode) {
 
     return true;
   } catch (error) {
-    console.error('❌ Error sending OTP email:', error.message);
+    console.error('❌ Error sending OTP email:', {
+      code: error.code,
+      responseCode: error.responseCode,
+      message: error.message,
+    });
     return false;
   }
 }

@@ -1,0 +1,36 @@
+{
+  "industries": [
+    {
+      "name": "power_plant",
+      "label": "Power Plant",
+      "description": "Coal/gas fired power generation facility",
+      "machines": ["boiler-01", "turbine-01", "generator-01", "transformer-01", "cooling-tower-01"],
+      "nodes": [],
+      "edges": []
+    },
+    {
+      "name": "water_treatment",
+      "label": "Water Treatment",
+      "description": "Municipal water purification and distribution facility",
+      "machines": ["intake-pump-01", "filter-unit-01", "chlorinator-01", "storage-tank-01", "dist-pump-01"],
+      "nodes": [],
+      "edges": []
+    },
+    {
+      "name": "manufacturing",
+      "label": "Manufacturing",
+      "description": "Automated production and assembly line",
+      "machines": ["conveyor-01", "robot-arm-01", "press-01", "qc-scanner-01", "packaging-01"],
+      "nodes": [],
+      "edges": []
+    },
+    {
+      "name": "chemical_facility",
+      "label": "Chemical Facility",
+      "description": "Chemical processing and refinery operations",
+      "machines": ["reactor-01", "distiller-01", "mixer-01", "storage-vessel-01", "scrubber-01"],
+      "nodes": [],
+      "edges": []
+    }
+  ]
+}

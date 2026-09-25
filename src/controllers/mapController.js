@@ -3,6 +3,14 @@ const fs = require('fs');
 const path = require('path');
 const { parseSvgToIndustry } = require('../services/svgParser');
 
+const fallbackIndustriesPath = path.join(__dirname, '..', '..', 'data', 'industries.json');
+
+const loadFallbackIndustries = () => {
+  if (!fs.existsSync(fallbackIndustriesPath)) return [];
+  const raw = JSON.parse(fs.readFileSync(fallbackIndustriesPath, 'utf-8'));
+  return raw.industries || raw;
+};
+
 // Load industry templates from JSON file or DB
 const getIndustries = async (req, res, next) => {
   try {
@@ -11,11 +19,7 @@ const getIndustries = async (req, res, next) => {
 
     // If empty, load from mock-data file (initial seed)
     if (industries.length === 0) {
-      const filePath = path.join(__dirname, '..', '..', '..', 'client', 'public', 'mock-data', 'industries.json');
-      if (fs.existsSync(filePath)) {
-        const raw = JSON.parse(fs.readFileSync(filePath, 'utf-8'));
-        industries = raw.industries || raw;
-      }
+      industries = loadFallbackIndustries();
     }
 
     res.json(industries);
@@ -26,12 +30,7 @@ const getIndustryByName = async (req, res, next) => {
   try {
     let industry = await Industry.findOne({ name: req.params.name }).lean();
     if (!industry) {
-      const filePath = path.join(__dirname, '..', '..', '..', 'client', 'public', 'mock-data', 'industries.json');
-      if (fs.existsSync(filePath)) {
-        const raw = JSON.parse(fs.readFileSync(filePath, 'utf-8'));
-        const list = raw.industries || raw;
-        industry = list.find((i) => i.name === req.params.name);
-      }
+      industry = loadFallbackIndustries().find((item) => item.name === req.params.name);
     }
     if (!industry) return res.status(404).json({ error: 'Industry not found' });
     res.json(industry);

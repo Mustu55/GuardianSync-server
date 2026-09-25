@@ -18,6 +18,9 @@ async function initTransporter() {
           user: smtpUser,
           pass: smtpPass,
         },
+        connectionTimeout: 8000,
+        greetingTimeout: 8000,
+        socketTimeout: 8000,
       });
       await transporter.verify();
       console.log('📧 Gmail SMTP transporter initialized and verified.');

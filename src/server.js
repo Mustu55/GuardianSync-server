@@ -5,7 +5,7 @@ const helmet = require('helmet');
 const morgan = require('morgan');
 const rateLimit = require('express-rate-limit');
 
-const { PORT, CORS_ORIGIN, NODE_ENV, SCADA_AUTO_START, SCADA_DEFAULT_INDUSTRY } = require('./config/env');
+const { PORT, corsOrigin, NODE_ENV, SCADA_AUTO_START, SCADA_DEFAULT_INDUSTRY } = require('./config/env');
 const connectDB = require('./config/db');
 const { isDatabaseConnected } = require('./config/db');
 const { initSocket } = require('./config/socket');
@@ -26,7 +26,7 @@ const server = http.createServer(app);
 
 // Middleware
 app.use(helmet({ contentSecurityPolicy: false }));
-app.use(cors({ origin: CORS_ORIGIN, credentials: true }));
+app.use(cors({ origin: corsOrigin, credentials: true }));
 app.use(express.json({ limit: '10mb' }));
 app.use(morgan('dev'));
 

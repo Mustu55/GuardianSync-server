@@ -1,12 +1,12 @@
 const { Server } = require('socket.io');
-const { CORS_ORIGIN } = require('./env');
+const { corsOrigin } = require('./env');
 
 let io = null;
 
 const initSocket = (httpServer) => {
   io = new Server(httpServer, {
     cors: {
-      origin: CORS_ORIGIN,
+      origin: corsOrigin,
       methods: ['GET', 'POST'],
       credentials: true,
     },

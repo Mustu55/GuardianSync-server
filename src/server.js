@@ -23,6 +23,7 @@ const { startAlertDispatcher, stopAlertDispatcher } = require('./jobs/alertDispa
 
 const app = express();
 const server = http.createServer(app);
+app.set('trust proxy', 1);
 
 // Middleware
 app.use(helmet({ contentSecurityPolicy: false }));

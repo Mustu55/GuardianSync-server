@@ -1,6 +1,8 @@
 const mongoose = require('mongoose');
 const { MONGODB_URI } = require('./env');
 
+const isDatabaseConnected = () => mongoose.connection.readyState === 1;
+
 const connectDB = async () => {
   try {
     const conn = await mongoose.connect(MONGODB_URI);
@@ -18,3 +20,4 @@ const connectDB = async () => {
 };
 
 module.exports = connectDB;
+module.exports.isDatabaseConnected = isDatabaseConnected;

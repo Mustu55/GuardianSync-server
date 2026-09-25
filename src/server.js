@@ -7,6 +7,7 @@ const rateLimit = require('express-rate-limit');
 
 const { PORT, CORS_ORIGIN, NODE_ENV, SCADA_AUTO_START, SCADA_DEFAULT_INDUSTRY } = require('./config/env');
 const connectDB = require('./config/db');
+const { isDatabaseConnected } = require('./config/db');
 const { initSocket } = require('./config/socket');
 const errorHandler = require('./middleware/errorHandler');
 
@@ -40,7 +41,13 @@ app.use('/api/map', mapRoutes);
 app.use('/api/forensic', forensicRoutes);
 
 app.get('/api/health', (req, res) => {
-  res.json({ status: 'ok', uptime: process.uptime(), env: NODE_ENV });
+  const database = isDatabaseConnected();
+  res.status(database ? 200 : 503).json({
+    status: database ? 'ok' : 'degraded',
+    database: database ? 'connected' : 'disconnected',
+    uptime: process.uptime(),
+    env: NODE_ENV,
+  });
 });
 
 app.use(errorHandler);

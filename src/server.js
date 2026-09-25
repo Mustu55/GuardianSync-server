@@ -40,6 +40,14 @@ app.use('/api/alerts', alertRoutes);
 app.use('/api/map', mapRoutes);
 app.use('/api/forensic', forensicRoutes);
 
+app.get('/', (req, res) => {
+  res.json({
+    service: 'GuardianSync Server',
+    status: 'ok',
+    health: '/api/health',
+  });
+});
+
 app.get('/api/health', (req, res) => {
   const database = isDatabaseConnected();
   res.status(database ? 200 : 503).json({

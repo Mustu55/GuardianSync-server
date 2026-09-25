@@ -6,26 +6,52 @@ dotenv.config({ path: path.join(__dirname, '..', '..', '..', '.env') });
 
 let transporter;
 
+const createTransporter = (port, secure) => nodemailer.createTransport({
+  host: (process.env.SMTP_HOST || 'smtp.gmail.com').trim(),
+  port,
+  secure,
+  auth: {
+    user: (process.env.SMTP_USER || '').trim(),
+    pass: (process.env.SMTP_PASS || '').replace(/\s/g, ''),
+  },
+  connectionTimeout: 8000,
+  greetingTimeout: 8000,
+  socketTimeout: 8000,
+});
+
 async function initTransporter() {
   if (!transporter) {
     const smtpUser = (process.env.SMTP_USER || '').trim();
-    const smtpPass = (process.env.SMTP_PASS || '').trim();
+    const smtpPass = (process.env.SMTP_PASS || '').replace(/\s/g, '');
 
     if (smtpUser && smtpPass) {
-      transporter = nodemailer.createTransport({
-        host: process.env.SMTP_HOST || 'smtp.gmail.com',
-        port: Number(process.env.SMTP_PORT || 465),
-        secure: String(process.env.SMTP_SECURE || 'true').toLowerCase() === 'true',
-        auth: {
-          user: smtpUser,
-          pass: smtpPass,
-        },
-        connectionTimeout: 8000,
-        greetingTimeout: 8000,
-        socketTimeout: 8000,
-      });
-      await transporter.verify();
-      console.log('📧 Gmail SMTP transporter initialized and verified.');
+      const configuredPort = Number(process.env.SMTP_PORT || 465);
+      const configuredSecure = String(process.env.SMTP_SECURE || 'true').toLowerCase() === 'true';
+      const candidates = [
+        [configuredPort, configuredSecure],
+        ...(configuredPort === 465 ? [[587, false]] : [[465, true]]),
+      ];
+
+      let lastError;
+      for (const [port, secure] of candidates) {
+        const candidate = createTransporter(port, secure);
+        try {
+          await candidate.verify();
+          transporter = candidate;
+          console.log(`📧 Gmail SMTP transporter initialized on port ${port}.`);
+          break;
+        } catch (error) {
+          lastError = error;
+          console.error('SMTP connection attempt failed:', {
+            port,
+            code: error.code,
+            responseCode: error.responseCode,
+            message: error.message,
+          });
+        }
+      }
+
+      if (!transporter) throw lastError;
     } else {
       console.log('⚠️ No SMTP_USER or SMTP_PASS found in .env. Email sending is disabled.');
       return null;
@@ -47,7 +73,7 @@ async function sendOtpEmail(toEmail, otpCode) {
       return true;
     }
 
-    const smtpUser = process.env.SMTP_USER || '';
+    const smtpUser = (process.env.SMTP_USER || '').trim();
     const info = await tp.sendMail({
       from: `"GuardianSync Security" <${smtpUser}>`,
       to: toEmail,

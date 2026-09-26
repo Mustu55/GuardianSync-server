@@ -16,7 +16,7 @@ router.put('/:id/approve', requireRole('admin'), approveCommand);
 router.put('/:id/reject', requireRole('admin'), rejectCommand);
 router.post('/killswitch', toggleKillSwitch);
 router.post('/maintenance', requireRole('admin'), toggleMaintenance);
-router.post('/simulation', requireRole('admin'), controlSimulation);
+router.post('/simulation', controlSimulation);
 router.get('/simulation/status', getSimStatus);
 
 module.exports = router;

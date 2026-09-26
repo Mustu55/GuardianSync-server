@@ -6,6 +6,33 @@ dotenv.config({ path: path.join(__dirname, '..', '..', '..', '.env') });
 
 let transporter;
 
+const sendViaResend = async (toEmail, otpCode) => {
+  const apiKey = (process.env.RESEND_API_KEY || '').trim();
+  if (!apiKey) return null;
+
+  const response = await fetch('https://api.resend.com/emails', {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${apiKey}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      from: process.env.EMAIL_FROM || 'GuardianSync <onboarding@resend.dev>',
+      to: [toEmail],
+      subject: 'Your GuardianSync Login OTP',
+      text: `Your GuardianSync OTP is ${otpCode}. It expires in 5 minutes.`,
+    }),
+    signal: AbortSignal.timeout(8000),
+  });
+
+  if (!response.ok) {
+    const error = await response.text();
+    throw new Error(`Resend ${response.status}: ${error}`);
+  }
+
+  return true;
+};
+
 const createTransporter = (port, secure) => nodemailer.createTransport({
   host: (process.env.SMTP_HOST || 'smtp.gmail.com').trim(),
   port,
@@ -62,6 +89,12 @@ async function initTransporter() {
 
 async function sendOtpEmail(toEmail, otpCode) {
   try {
+    const resendResult = await sendViaResend(toEmail, otpCode);
+    if (resendResult) {
+      console.log(`OTP email sent via Resend to ${toEmail}`);
+      return true;
+    }
+
     const tp = await initTransporter();
 
     // If no real SMTP config, just mock it instantly to avoid timeouts
